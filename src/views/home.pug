@@ -5,6 +5,19 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title toySite
         link(rel="stylesheet", href="/public/style/index.css")
+        link(rel="stylesheet", href="/public/style/common.css")
+        link(rel="stylesheet", href="/public/style/default.css")
     body 
-        h1 Assembles!!!
-        script(src="/public/js/app.js")
+        header
+            nav#container 
+                ul.menus
+                    li.item 
+                        a(href="/about")
+                            span About Me
+                    li.item 
+                        a(href="/map") 
+                            span Map 
+                    li.item 
+                        a(href="/history") 
+                            span Projects
+        script(src="/public/chat.js")
