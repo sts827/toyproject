@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "toy projects, webRtc, three.js, gemini-api",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "nodemon"
   },
@@ -14,6 +15,7 @@
     "nodemon": "^3.1.4"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "pug": "^3.0.3",
     "ws": "^8.18.0"

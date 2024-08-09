@@ -9,6 +9,7 @@ app.set("views", __dirname + "/views");
 // static resource 경로
 app.use("/public", express.static(__dirname + "/public"));
 
+
 // http + webSocket
 const server = http.createServer(app);
 const webSocket = new WebSocket.Server({ server });

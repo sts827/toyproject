@@ -7,6 +7,14 @@ html(lang="en")
         link(rel="stylesheet", href="/public/style/index.css")
         link(rel="stylesheet", href="/public/style/common.css")
         link(rel="stylesheet", href="/public/style/default.css")
+        script(type="importmap").
+            {
+                "imports": {
+                    "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/+esm",
+                    "orbitControls": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.min.js",
+                    "css2Renderer":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/renderers/CSS2DRenderer.js"
+                }
+            }
     body 
         header
             nav#container 
@@ -20,4 +28,9 @@ html(lang="en")
                     li.item 
                         a(href="/history") 
                             span Projects
-        script(src="/public/chat.js")
+        main
+            article#contents_container
+                section.content
+                    #globe_container
+        script(src="/public/js/chat.js")
+        script( type="module" src="/public/js/globe.js")

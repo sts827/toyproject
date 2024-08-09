@@ -21,8 +21,9 @@ header{
 }
 
 .menus li a span{
+    font-family: "GmarketSansMedium";
+    font-weight:450;
     font-size:22px;
-    font-weight:350;
 }
 
 #container.on{
