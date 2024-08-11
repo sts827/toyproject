@@ -4,13 +4,54 @@ import { TrackballControls } from 'trackControl';
 import { CSS2DRenderer } from 'css2Renderer';
 import ThreeGlobe from 'https://cdn.jsdelivr.net/npm/three-globe@2.31.1/+esm';
 
-
-// container
 const globeContainer = document.getElementById('globe_container');
 // 초기 세팅
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
+// setup latlng position
+const pointViews = [
+    {
+        lat:33.4528628,
+        lng:126.5727632,
+        size:0.3,
+        color:"red",
+        description: "wayplus",
+        maxR: Math.random() * 2 + 3,
+        propagationSpeed: 0.5,
+        repeatPeriod: Math.random() * 2000 + 200
+    },
+    {
+        lat:33.457063,
+        lng:126.563973,
+        size:0.3,
+        color:"red",
+        description: "jeju-university",
+        maxR: Math.random() * 2 + 3,
+        propagationSpeed: 0.5,
+        repeatPeriod: Math.random() * 2000 + 200
+    },
+    {
+        lat:34.829343,
+        lng:128.425953,
+        size:0.3,
+        color:"red",
+        description: "big-Leader AI campus",
+        maxR: Math.random() * 2 + 3,
+        propagationSpeed: 0.5,
+        repeatPeriod: Math.random() * 2000 + 200
+    },
+    {
+        lat:35.666752,
+        lng:139.764006,
+        size:0.3,
+        color:"red",
+        description: "jp ICT, CAL",
+        maxR: Math.random() * 2 + 3,
+        propagationSpeed: 0.5,
+        repeatPeriod: Math.random() * 2000 + 200
+    }
+]
 
 // texture image URL
 const mapURL = "/public/images/globe/globe_map.jpg";
@@ -24,7 +65,8 @@ const earthNight_high = "/public/images/globe/night_sky.png"
 const earthNight_low = "/public/images/globe/blackMarble.jpg"
 const cloudURL = "/public/images/globe/clouds.png";
 
- 
+// openLayer URL
+
 // globe materials
 const pMaterial = new THREE.MeshPhongMaterial({
     specular: 0x7c7c7c,
@@ -36,6 +78,23 @@ const pMaterial = new THREE.MeshPhongMaterial({
     shininess: 3
 })
 
+const hexSphere =  new THREE.MeshPhongMaterial({
+    color: new THREE.Color(0x3a228a),
+    emissive: new THREE.Color(0x220038),
+    emissiveIntensity: 0.1,
+    shininess: 0.7
+});
+
+// cloud materials
+// 1. cloud texture
+const cloudMap = loadTextureImage(cloudURL);
+const cloudMaterial = new THREE.MeshLambertMaterial({
+    map: cloudMap,
+    transparent: true,
+    opacity: 0.8
+});
+// 2. cloud speed
+const CLOUDS_ROTATION_SPEED = -0.006; // deg/frame
 
 // load texture image
 function loadTextureImage(url) {
@@ -53,42 +112,71 @@ function loadDataGeoJson() {
     })));
 }
 
+const colorInterpolator = t => `rgba(255,100,50,${1 - t})`;
+
+
 // render globe by geoData -- core utils
 function renderGlobe(data) {
 
     // shader
     if (data != undefined && data != null) {
-        console.log("rendering globe...");
         const globe = new ThreeGlobe({
             waitForGlobeReady: true,
             animateIn:true
         });
-        const sphereMaterial =  new THREE.MeshPhongMaterial({
-            color: new THREE.Color(0x3a228a),
-            emissive: new THREE.Color(0x220038),
-            emissiveIntensity: 0.1,
-            shininess: 0.7
-        });
-        // globe
-        globe.hexPolygonsData(data)
-            .hexPolygonMargin(0.5)
-            .hexPolygonResolution(3)
-            .hexPolygonColor(d => d.color)
-            .globeMaterial(sphereMaterial)
+        // setup globe
+        globe
+            .globeMaterial(pMaterial)
             .showAtmosphere(true)
-            .atmosphereColor("#ffffff")
-            .atmosphereAltitude(0.1)
+            .atmosphereColor("#3f7b9d")
+            .atmosphereAltitude(0.2)
+            // .hexPolygonsData(data)
+            // .hexPolygonMargin(0.5)
+            // .hexPolygonResolution(3)
+            // .hexPolygonColor(d => d.color)
+        globe
+            .htmlElementsData(pointViews)
+            .htmlElement(d => {
+                const container = document.createElement("div");
+                const tooltip = document.createElement("div");
+                const marker = document.createElement("div");
+                // container > tooltip, marker
+                container.classList.add("markerContainer");
+                tooltip.classList.add("tooltip");
+                tooltip.innerHTML = `
+                <h2 class='title'>${d.description}</h2>
+                <div class='range'>기간:2021~2023</div>
+                <div class='thumbnail'>이미지 area</div>
+                `;
+                marker.classList.add("marker");
+                container.appendChild(tooltip);
+                container.appendChild(marker);
+                return container;
+            })
+
+        // setup cloud
+        const cloudGeo = new THREE.SphereGeometry(globe.getGlobeRadius() * (1 + 0.007), 64, 32);
+        const clouds = new THREE.Mesh(cloudGeo, cloudMaterial);
+        
+        // animation arc
 
 
         // setup renderer
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        globeContainer.appendChild(renderer.domElement);
+        const renderers = [new THREE.WebGLRenderer(), new CSS2DRenderer];
+        renderers.forEach((r, idx) => {
+            r.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            if (idx > 0) {
+                r.domElement.style.position = 'absolute';
+                r.domElement.style.top = '0px';
+                r.domElement.style.pointerEvents = 'none';
+            }
+            globeContainer.appendChild(r.domElement);
+        })
 
-        
         // setup scene
         const scene = new THREE.Scene();
         scene.add(globe);
+        scene.add(clouds);
 
         scene.background = new THREE.Color(0x040d21);
 
@@ -96,44 +184,44 @@ function renderGlobe(data) {
         const camera = new THREE.PerspectiveCamera();
         camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
         camera.updateProjectionMatrix();
-        camera.position.z = 500;
+        camera.position.set(-3,3,500);
         
         // setup control
-        let controls = new OrbitControls(camera, renderer.domElement);
+        let controls = new OrbitControls(camera, renderers[0].domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.1;
         controls.maxDistance = 500;
-        controls.minDistance = 150;
+        controls.minDistance = 130;
         controls.zoomSpeed = 0.3; // -> linear하게 1까지 변경
 
         // setup sunlight
-        // const sunLight = new THREE.DirectionalLight(0xffffff, 1.5 * Math.PI);
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5 * Math.PI);
         // sunLight.position.set(-3, 3, 3);
-        // scene.add(sunLight);
-        const ambientLight = new THREE.AmbientLight(0x509bff, 0.3);
-        camera.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(-800, 2000, 400);
-        camera.add(dirLight);
-
-        const dirLight2 = new THREE.DirectionalLight(0x455dee, 0.1);
-        dirLight2.position.set(-200, 500, 200);
-        camera.add(dirLight2);
-
-        const dirLight3 = new THREE.DirectionalLight(0x13176d, 0.5);
-        dirLight3.position.set(-200, 500, 200);
-        camera.add(dirLight3);
-
-        scene.add(camera);
-        scene.fog = new THREE.Fog(0x535ef3, 400, 2000);
+        scene.add(sunLight);
 
 
+        globe.setPointOfView(camera.position, globe.position);
+        controls.addEventListener('change', () => globe.setPointOfView(camera.position, globe.position));
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderers.forEach((r) => { r.setSize(width, height) });
+            // renderers[0].setSize(width, height);
+
+            // // css2Renderer
+            // labelRenderer.setSize(width, height);
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
         // animate IIFE
         (function animate() {
+    
             controls.update();
             // globe.rotation.y += -0.5 * Math.PI / 180;
-            renderer.render(scene, camera);
+            renderers.forEach(r => r.render(scene, camera));
+            // clouds
+            clouds.rotation.y += CLOUDS_ROTATION_SPEED * Math.PI / 180;
             requestAnimationFrame(animate);
         })();
     }

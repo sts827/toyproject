@@ -1,0 +1,32 @@
+
+.tooltip {
+    width: 120px;
+    max-height: max-content;
+}
+
+.tooltip .title,
+.tooltip .range {
+    font-family: 'NanumSquareRound';
+    font-weight: 300;
+    font-size: 12px;
+    color: #efefef;
+}
+
+.marker {
+    width: 10px;
+    height: 10px;
+    background-color: #F3F7EC;
+    border-radius: 50%;
+    animation: 1.5s ease-in-out infinite fadeInOut;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
