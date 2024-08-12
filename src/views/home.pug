@@ -7,33 +7,21 @@ html(lang="en")
         link(rel="stylesheet", href="/public/style/index.css")
         link(rel="stylesheet", href="/public/style/common.css")
         link(rel="stylesheet", href="/public/style/default.css")
+        script(src="https://cdn.jsdelivr.net/npm/ol@10.0.0/dist/ol.js")
         script(type="importmap").
             {
                 "imports": {
-                    "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/+esm",
+                    "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
+                    "OrbitControls":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.min.js",
+                    "three-globe":"https://cdn.jsdelivr.net/npm/three-globe@2.31.1/+esm",
                     "trackControl":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/TrackballControls.js",
-                    "orbitControls": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.min.js",
-                    "css2Renderer":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/renderers/CSS2DRenderer.js"
+                    "transformControls":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/TransformControls.js",
+                    "css2Renderer":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/renderers/CSS2DRenderer.js",
+                    "tween":"https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@23.1.2/+esm"
                 }
             }
-    body 
-        header
-            nav#container 
-                ul.menus
-                    li.item 
-                        a(href="/about")
-                            span About Me
-                    li.item 
-                        a(href="/map") 
-                            span Map 
-                    li.item 
-                        a(href="/history") 
-                            span Projects
-        main
-            article#contents_container
-                section.content
-                    #globe_container
-
-        script(src="/public/js/chat.js")
-        script.
-        script( type="module" src="/public/js/globe.js")
+    body
+        div#container
+            div#map
+        script(type="module" src="/public/js/map.js")
+        //- script( type="module" src="/public/js/globe.js")

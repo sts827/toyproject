@@ -35,6 +35,3 @@ app.use("/map", mapRoute);
 app.use("/gpt", gptRoute);
 
 server.listen(3000);
-
-// console.log("server is listening");
-// app.listen(3000);

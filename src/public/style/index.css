@@ -1,4 +1,3 @@
-
 .tooltip {
     width: 120px;
     max-height: max-content;
@@ -18,6 +17,13 @@
     background-color: #F3F7EC;
     border-radius: 50%;
     animation: 1.5s ease-in-out infinite fadeInOut;
+}
+
+#map {
+    position: fixed;
+    visibility: hidden;
+    width: 1000px;
+    height: 500px;
 }
 
 @keyframes fadeInOut {
